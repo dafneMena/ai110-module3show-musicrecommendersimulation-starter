@@ -17,17 +17,17 @@ Replace this paragraph with your own summary of what your version does.
 
 ## How The System Works
 
-Explain your design in plain language.
+Real-world recommenders blend two approaches:
 
-Some prompts to answer:
+ **collaborative filtering**, which predicts taste from what similar users liked, and **content-based filtering**, which predicts taste from an item's own attributes. This simulation is a **content-based** recommender — it has no other users to learn from, so it matches each song's attributes directly against one user's stated taste profile. It also mirrors the two-stage structure production systems use: a **scoring rule** that rates one song against the user profile, and a separate **ranking rule** that sorts and truncates the full scored list to the top `k`.
 
-- What features does each `Song` use in your system
-  - For example: genre, mood, energy, tempo
-- What information does your `UserProfile` store
-- How does your `Recommender` compute a score for each song
-- How do you choose which songs to recommend
+**`Song` features used:** `genre`, `mood`, `energy`, `acousticness`. These four were chosen because they had the widest, least-redundant spread across the sample catalog — `tempo_bpm` and `danceability` were dropped from scoring since they closely tracked `energy` in this dataset and would have added weight without adding new information.
 
-You can include a simple diagram or bullet list if helpful.
+**`UserProfile` stores:** `favorite_genre`, `favorite_mood`, `target_energy`, and `likes_acoustic` — a direct, one to one mirror of the `Song` features above, so every scored attribute has a matching preference to compare against.
+
+**Scoring:** `score_song` computes a weighted average of four 0–1 components: exact matches on `genre` (0.35) and `mood` (0.25) score 1.0 or 0.0; `energy` (0.25) scores `1 - abs(song.energy - target_energy)`, so a near-miss still scores highly; and `acousticness` (0.15) scores `song.acousticness` (or `1 - song.acousticness` if the user doesn't like acoustic), scaling with how strongly the song leans that way rather than a hard threshold. Genre and mood carry the most weight as the strongest signal in a small catalog; energy and acousticness are smoother secondary and tie-breaking signals. Missing preferences (e.g. no `likes_acoustic`) are dropped and the remaining weights renormalize. `score_song` also returns a reason per component, which `explain_recommendation` and `recommend_songs` join into the "Because: ..." text.
+
+**Choosing recommendations:** `recommend_songs` calls `score_song` on every song, then sorts by score descending and returns the top `k`. Ties are broken by catalog order.
 
 ---
 
