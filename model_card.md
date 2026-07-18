@@ -79,13 +79,145 @@ How you checked whether the recommender behaved as expected.
 Prompts:  
 
 - Which user profiles you tested  
+**High-Energy Pop**, **Chill Lofi**, and **Deep Intense Rock**, plus one adversarial profile, **Sad but Wired** 
 - What you looked for in the recommendations  
+Whether the #1 result was a genre+mood match, and whether score gaps between ranks made sense.
 - What surprised you  
+Sad but Wired (sad mood + 0.95 energy) still ranked the low-energy blues/sad song first at 0.81, since genre+mood weight (0.60) outweighs the energy mismatch.
 - Any simple tests or comparisons you ran  
+Compared normal vs. adversarial profiles: normal ones score near perfect at #1, the adversarial one scores lower but still wins decisively, showing the model averages preferences rather than flagging conflicts.
 
-No need for numeric metrics unless you created some.
+User profile outputs: 
 
+=== High-Energy Pop ===
+User profile: genre=pop, mood=happy, energy=0.85
+
+Top recommendations:
 ---
+```
++------+------------------+-------+-----------------------------------------------+
+| Rank | Song             | Score | Reason                                        |
++------+------------------+-------+-----------------------------------------------+
+| 1    | Sunrise City     | 0.99  | Genre matches your favorite (pop); Mood       |
+|      |                  |       | matches your favorite (happy); Energy (0.82)  |
+|      |                  |       | is close to your target (0.85)                |
++------+------------------+-------+-----------------------------------------------+
+| 2    | Gym Hero         | 0.68  | Genre matches your favorite (pop); Mood       |
+|      |                  |       | (intense) differs from your favorite (happy); |
+|      |                  |       | Energy (0.93) is close to your target (0.85)  |
++------+------------------+-------+-----------------------------------------------+
+| 3    | Rooftop Lights   | 0.56  | Genre (indie pop) differs from your favorite  |
+|      |                  |       | (pop); Mood matches your favorite (happy);    |
+|      |                  |       | Energy (0.76) is close to your target (0.85)  |
++------+------------------+-------+-----------------------------------------------+
+| 4    | Carnival Sundown | 0.28  | Genre (latin) differs from your favorite      |
+|      |                  |       | (pop); Mood (playful) differs from your       |
+|      |                  |       | favorite (happy); Energy (0.80) is close to   |
+|      |                  |       | your target (0.85)                            |
++------+------------------+-------+-----------------------------------------------+
+| 5    | Storm Runner     | 0.28  | Genre (rock) differs from your favorite       |
+|      |                  |       | (pop); Mood (intense) differs from your       |
+|      |                  |       | favorite (happy); Energy (0.91) is close to   |
+|      |                  |       | your target (0.85)                            |
++------+------------------+-------+-----------------------------------------------+
+
+=== Chill Lofi ===
+User profile: genre=lofi, mood=chill, energy=0.35
+
+Top recommendations:
+
++------+---------------------+-------+-----------------------------------------------+
+| Rank | Song                | Score | Reason                                        |
++------+---------------------+-------+-----------------------------------------------+
+| 1    | Library Rain        | 1.00  | Genre matches your favorite (lofi); Mood      |
+|      |                     |       | matches your favorite (chill); Energy (0.35)  |
+|      |                     |       | is close to your target (0.35)                |
++------+---------------------+-------+-----------------------------------------------+
+| 2    | Midnight Coding     | 0.98  | Genre matches your favorite (lofi); Mood      |
+|      |                     |       | matches your favorite (chill); Energy (0.42)  |
+|      |                     |       | is close to your target (0.35)                |
++------+---------------------+-------+-----------------------------------------------+
+| 3    | Focus Flow          | 0.69  | Genre matches your favorite (lofi); Mood      |
+|      |                     |       | (focused) differs from your favorite (chill); |
+|      |                     |       | Energy (0.40) is close to your target (0.35)  |
++------+---------------------+-------+-----------------------------------------------+
+| 4    | Spacewalk Thoughts  | 0.57  | Genre (ambient) differs from your favorite    |
+|      |                     |       | (lofi); Mood matches your favorite (chill);   |
+|      |                     |       | Energy (0.28) is close to your target (0.35)  |
++------+---------------------+-------+-----------------------------------------------+
+| 5    | Coffee Shop Stories | 0.29  | Genre (jazz) differs from your favorite       |
+|      |                     |       | (lofi); Mood (relaxed) differs from your      |
+|      |                     |       | favorite (chill); Energy (0.37) is close to   |
+|      |                     |       | your target (0.35)                            |
++------+---------------------+-------+-----------------------------------------------+
+
+=== Deep Intense Rock ===
+User profile: genre=rock, mood=intense, energy=0.9
+
+Top recommendations:
+
++------+-----------------+-------+-----------------------------------------------+
+| Rank | Song            | Score | Reason                                        |
++------+-----------------+-------+-----------------------------------------------+
+| 1    | Storm Runner    | 1.00  | Genre matches your favorite (rock); Mood      |
+|      |                 |       | matches your favorite (intense); Energy       |
+|      |                 |       | (0.91) is close to your target (0.90)         |
++------+-----------------+-------+-----------------------------------------------+
+| 2    | Gym Hero        | 0.58  | Genre (pop) differs from your favorite        |
+|      |                 |       | (rock); Mood matches your favorite (intense); |
+|      |                 |       | Energy (0.93) is close to your target (0.90)  |
++------+-----------------+-------+-----------------------------------------------+
+| 3    | Skyline Anthem  | 0.28  | Genre (edm) differs from your favorite        |
+|      |                 |       | (rock); Mood (euphoric) differs from your     |
+|      |                 |       | favorite (intense); Energy (0.95) is close to |
+|      |                 |       | your target (0.90)                            |
++------+-----------------+-------+-----------------------------------------------+
+| 4    | Crimson Warpath | 0.27  | Genre (metal) differs from your favorite      |
+|      |                 |       | (rock); Mood (angry) differs from your        |
+|      |                 |       | favorite (intense); Energy (0.97) is close to |
+|      |                 |       | your target (0.90)                            |
++------+-----------------+-------+-----------------------------------------------+
+| 5    | Sunrise City    | 0.27  | Genre (pop) differs from your favorite        |
+|      |                 |       | (rock); Mood (happy) differs from your        |
+|      |                 |       | favorite (intense); Energy (0.82) is close to |
+|      |                 |       | your target (0.90)                            |
++------+-----------------+-------+-----------------------------------------------+
+
+=== Sad but Wired ===
+User profile: genre=blues, mood=sad, energy=0.95
+
+Top recommendations:
+
++------+-----------------+-------+-----------------------------------------------+
+| Rank | Song            | Score | Reason                                        |
++------+-----------------+-------+-----------------------------------------------+
+| 1    | Empty Chair     | 0.81  | Genre matches your favorite (blues); Mood     |
+|      |                 |       | matches your favorite (sad); Energy (0.30) is |
+|      |                 |       | somewhat different from your target (0.95)    |
++------+-----------------+-------+-----------------------------------------------+
+| 2    | Skyline Anthem  | 0.29  | Genre (edm) differs from your favorite        |
+|      |                 |       | (blues); Mood (euphoric) differs from your    |
+|      |                 |       | favorite (sad); Energy (0.95) is close to     |
+|      |                 |       | your target (0.95)                            |
++------+-----------------+-------+-----------------------------------------------+
+| 3    | Gym Hero        | 0.29  | Genre (pop) differs from your favorite        |
+|      |                 |       | (blues); Mood (intense) differs from your     |
+|      |                 |       | favorite (sad); Energy (0.93) is close to     |
+|      |                 |       | your target (0.95)                            |
++------+-----------------+-------+-----------------------------------------------+
+| 4    | Crimson Warpath | 0.29  | Genre (metal) differs from your favorite      |
+|      |                 |       | (blues); Mood (angry) differs from your       |
+|      |                 |       | favorite (sad); Energy (0.97) is close to     |
+|      |                 |       | your target (0.95)                            |
++------+-----------------+-------+-----------------------------------------------+
+| 5    | Storm Runner    | 0.28  | Genre (rock) differs from your favorite       |
+|      |                 |       | (blues); Mood (intense) differs from your     |
+|      |                 |       | favorite (sad); Energy (0.91) is close to     |
+|      |                 |       | your target (0.95)                            |
++------+-----------------+-------+-----------------------------------------------+ ```
+
+
+
 
 ## 8. Future Work  
 

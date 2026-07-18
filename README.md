@@ -71,22 +71,36 @@ You can add more tests in `tests/test_recommender.py`.
 Paste a sample of your recommender's output here as a text block so a reader can see what it produces:
 
 ```
+User profile: genre=pop, mood=happy, energy=0.8
+
 Top recommendations:
 
-Sunrise City - Score: 0.99
-Because: Genre matches your favorite (pop); Mood matches your favorite (happy); Energy (0.82) is close to your target (0.80)
++------+------------------+-------+-----------------------------------------------+
+| Rank | Song             | Score | Reason                                        |
++------+------------------+-------+-----------------------------------------------+
+| 1    | Sunrise City     | 0.99  | Genre matches your favorite (pop); Mood       |
+|      |                  |       | matches your favorite (happy); Energy (0.82)  |
+|      |                  |       | is close to your target (0.80)                |
++------+------------------+-------+-----------------------------------------------+
+| 2    | Gym Hero         | 0.67  | Genre matches your favorite (pop); Mood       |
+|      |                  |       | (intense) differs from your favorite (happy); |
+|      |                  |       | Energy (0.93) is close to your target (0.80)  |
++------+------------------+-------+-----------------------------------------------+
+| 3    | Rooftop Lights   | 0.58  | Genre (indie pop) differs from your favorite  |
+|      |                  |       | (pop); Mood matches your favorite (happy);    |
+|      |                  |       | Energy (0.76) is close to your target (0.80)  |
++------+------------------+-------+-----------------------------------------------+
+| 4    | Carnival Sundown | 0.29  | Genre (latin) differs from your favorite      |
+|      |                  |       | (pop); Mood (playful) differs from your       |
+|      |                  |       | favorite (happy); Energy (0.80) is close to   |
+|      |                  |       | your target (0.80)                            |
++------+------------------+-------+-----------------------------------------------+
+| 5    | Night Drive Loop | 0.28  | Genre (synthwave) differs from your favorite  |
+|      |                  |       | (pop); Mood (moody) differs from your         |
+|      |                  |       | favorite (happy); Energy (0.75) is close to   |
+|      |                  |       | your target (0.80)                            |
++------+------------------+-------+-----------------------------------------------+
 
-Gym Hero - Score: 0.67
-Because: Genre matches your favorite (pop); Mood (intense) differs from your favorite (happy); Energy (0.93) is close to your target (0.80)
-
-Rooftop Lights - Score: 0.58
-Because: Genre (indie pop) differs from your favorite (pop); Mood matches your favorite (happy); Energy (0.76) is close to your target (0.80)
-
-Carnival Sundown - Score: 0.29
-Because: Genre (latin) differs from your favorite (pop); Mood (playful) differs from your favorite (happy); Energy (0.80) is close to your target (0.80)
-
-Night Drive Loop - Score: 0.28
-Because: Genre (synthwave) differs from your favorite (pop); Mood (moody) differs from your favorite (happy); Energy (0.75) is close to your target (0.80)
 ```
 
 **Screenshot or video** *(optional)*: <!-- Insert a screenshot or demo video link here -->
