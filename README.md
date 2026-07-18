@@ -25,7 +25,7 @@ Real-world recommenders blend two approaches:
 
 **`UserProfile` stores:** `favorite_genre`, `favorite_mood`, `target_energy`, and `likes_acoustic` — a direct, one to one mirror of the `Song` features above, so every scored attribute has a matching preference to compare against.
 
-**Scoring:** `score_song` computes a weighted average of four 0–1 components: exact matches on `genre` (0.35) and `mood` (0.25) score 1.0 or 0.0; `energy` (0.25) scores `1 - abs(song.energy - target_energy)`, so a near-miss still scores highly; and `acousticness` (0.15) scores `song.acousticness` (or `1 - song.acousticness` if the user doesn't like acoustic), scaling with how strongly the song leans that way rather than a hard threshold. Genre and mood carry the most weight as the strongest signal in a small catalog; energy and acousticness are smoother secondary and tie-breaking signals. Missing preferences (e.g. no `likes_acoustic`) are dropped and the remaining weights renormalize. `score_song` also returns a reason per component, which `explain_recommendation` and `recommend_songs` join into the "Because: ..." text.
+**Scoring:** `score_song` computes a weighted average of four 0–1 components: exact matches on `genre` (0.35) and `mood` (0.25) score 1.0 or 0.0; `energy` (0.25) scores `1 - abs(song.energy - target_energy)`, so a near miss still scores highly; and `acousticness` (0.15) scores `song.acousticness`, scaling with how strongly the song leans that way rather than a hard threshold. Genre and mood carry the most weight as the strongest signal in a small catalog; energy and acousticness are smoother secondary and tie-breaking signals. Missing preferences are dropped and the remaining weights renormalize. `score_song` also returns a reason per component, which `explain_recommendation` and `recommend_songs` join into the "Because: ..." text.
 
 **Choosing recommendations:** `recommend_songs` calls `score_song` on every song, then sorts by score descending and returns the top `k`. Ties are broken by catalog order.
 
@@ -71,12 +71,22 @@ You can add more tests in `tests/test_recommender.py`.
 Paste a sample of your recommender's output here as a text block so a reader can see what it produces:
 
 ```
-# e.g.:
-# User profile: genre=indie, mood=chill, energy=low
-# Recommendations:
-#   1. ...
-#   2. ...
-#   3. ...
+Top recommendations:
+
+Sunrise City - Score: 0.99
+Because: Genre matches your favorite (pop); Mood matches your favorite (happy); Energy (0.82) is close to your target (0.80)
+
+Gym Hero - Score: 0.67
+Because: Genre matches your favorite (pop); Mood (intense) differs from your favorite (happy); Energy (0.93) is close to your target (0.80)
+
+Rooftop Lights - Score: 0.58
+Because: Genre (indie pop) differs from your favorite (pop); Mood matches your favorite (happy); Energy (0.76) is close to your target (0.80)
+
+Carnival Sundown - Score: 0.29
+Because: Genre (latin) differs from your favorite (pop); Mood (playful) differs from your favorite (happy); Energy (0.80) is close to your target (0.80)
+
+Night Drive Loop - Score: 0.28
+Because: Genre (synthwave) differs from your favorite (pop); Mood (moody) differs from your favorite (happy); Energy (0.75) is close to your target (0.80)
 ```
 
 **Screenshot or video** *(optional)*: <!-- Insert a screenshot or demo video link here -->

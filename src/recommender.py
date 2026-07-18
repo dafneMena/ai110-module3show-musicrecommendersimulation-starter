@@ -47,12 +47,14 @@ class Recommender:
         self.songs = songs
 
     def recommend(self, user: UserProfile, k: int = 5) -> List[Song]:
+        """Returns the top-k songs for a user, ranked by score."""
         user_prefs = asdict(user)
         scored = [(song, score_song(user_prefs, asdict(song))[0]) for song in self.songs]
         scored.sort(key=lambda pair: pair[1], reverse=True)
         return [song for song, _ in scored[:k]]
 
     def explain_recommendation(self, user: UserProfile, song: Song) -> str:
+        """Returns a human-readable explanation of why a song fits a user."""
         _, reasons = score_song(asdict(user), asdict(song))
         return "; ".join(reasons)
 
@@ -77,6 +79,7 @@ def load_songs(csv_path: str) -> List[Dict]:
                 "danceability": float(row["danceability"]),
                 "acousticness": float(row["acousticness"]),
             })
+    # print(f"Loaded Songs {len(songs)}")
     return songs
 
 def score_song(user_prefs: Dict, song: Dict) -> Tuple[float, List[str]]:
