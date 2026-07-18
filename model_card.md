@@ -3,7 +3,7 @@
 ## 1. Model Name  
 
 Give your model a short, descriptive name.  
-Example: **VibeFinder 1.0**  
+Example: **MoodMatch 1.0**  
 
 ---
 
@@ -14,8 +14,11 @@ Describe what your recommender is designed to do and who it is for.
 Prompts:  
 
 - What kind of recommendations does it generate  
+A ranked top-5 list of songs from a fixed catalog, each with a plain-language reason for why it fits.
 - What assumptions does it make about the user  
+That the user can state their taste as a genre, mood, and target energy level (plus optionally an acoustic preference), and that these traits alone capture what they want.
 - Is this for real users or classroom exploration  
+Classroom exploration — the catalog is small and hand-labeled, meant for learning how weighted scoring works, not for production use.
 
 ---
 
@@ -26,11 +29,14 @@ Explain your scoring approach in simple language.
 Prompts:  
 
 - What features of each song are used (genre, energy, mood, etc.)  
+Genre, mood, energy, and acousticness.
 - What user preferences are considered  
+Favorite genre, favorite mood, target energy level, and (optionally) whether the user likes acoustic sound.
 - How does the model turn those into a score  
+Each preference gets a "how well does this song fit?" score from 0 to 1, then those are combined into one weighted average — genre and mood matter most, energy and acoustic fit matter a bit less.
 - What changes did you make from the starter logic  
+Made energy and acousticness "how close" scores instead of strict yes/no matches, and if a user skips a preference, the other weights stretch to fill the gap so the score is still fair.
 
-Avoid code here. Pretend you are explaining the idea to a friend who does not program.
 
 ---
 
@@ -41,9 +47,15 @@ Describe the dataset the model uses.
 Prompts:  
 
 - How many songs are in the catalog  
+18 songs.
 - What genres or moods are represented  
+15 genres - pop, lofi, rock, ambient, jazz, synthwave, indie pop, folk, metal, r&b, latin, blues, edm, country, classical 
+
+14 moods - happy, chill, intense, relaxed, moody, focused, nostalgic, angry, romantic, playful, sad, euphoric, wistful, serene.
 - Did you add or remove data  
+No — used the provided CSV as is.
 - Are there parts of musical taste missing in the dataset  
+Yes there is no hip-hop/rap, and most genres have only one song, so there's little variety within a genre and no way to test finer sub-genre or artist preferences.
 
 ---
 
@@ -54,8 +66,11 @@ Where does your system seem to work well
 Prompts:  
 
 - User types for which it gives reasonable results  
+Users whose genre, mood, and energy preference are all consistent with each other, like High-Energy Pop or Chill Lofi.
 - Any patterns you think your scoring captures correctly  
+Treating energy as a "how close" fit rather than a strict match, so a song doesn't get zeroed out just for being slightly off-target.
 - Cases where the recommendations matched your intuition  
+Chill Lofi's and Deep Intense Rock's top picks were exactly the songs I'd have picked by hand, near perfect genre, mood, and energy fit.
 
 ---
 
@@ -66,9 +81,13 @@ Where the system struggles or behaves unfairly.
 Prompts:  
 
 - Features it does not consider  
+Tempo, valence, and danceability are loaded from the CSV but never used in scoring.
 - Genres or moods that are underrepresented  
+Most genres (metal, classical, country, blues, latin, jazz, folk, edm) have only one song each, so a fan of those gets just one real match.
 - Cases where the system overfits to one preference  
+Genre+mood are exact-match booleans worth 0.60 combined weight, so they can override a badly-fitting energy score (seen in the Sad but Wired test).
 - Ways the scoring might unintentionally favor some users  
+Genre/mood matching is case- and spelling-exact, so a user typing "Pop" instead of "pop" scores zero on that trait with no warning.
 
 ---
 
@@ -88,13 +107,12 @@ Sad but Wired (sad mood + 0.95 energy) still ranked the low-energy blues/sad son
 Compared normal vs. adversarial profiles: normal ones score near perfect at #1, the adversarial one scores lower but still wins decisively, showing the model averages preferences rather than flagging conflicts.
 
 User profile outputs: 
-
+---
+```
 === High-Energy Pop ===
 User profile: genre=pop, mood=happy, energy=0.85
 
 Top recommendations:
----
-```
 +------+------------------+-------+-----------------------------------------------+
 | Rank | Song             | Score | Reason                                        |
 +------+------------------+-------+-----------------------------------------------+
@@ -214,8 +232,10 @@ Top recommendations:
 |      |                 |       | (blues); Mood (intense) differs from your     |
 |      |                 |       | favorite (sad); Energy (0.91) is close to     |
 |      |                 |       | your target (0.95)                            |
-+------+-----------------+-------+-----------------------------------------------+ ```
++------+-----------------+-------+-----------------------------------------------+ 
 
+```
+---
 
 
 
@@ -226,9 +246,13 @@ Ideas for how you would improve the model next.
 Prompts:  
 
 - Additional features or preferences  
+Use tempo, valence, and danceability, which are already loaded but currently unused, plus let users list a secondary genre or mood instead of just one.
 - Better ways to explain recommendations  
+Flag when a profile's own preferences conflict (e.g. sad mood + high energy) instead of silently averaging them away.
 - Improving diversity among the top results  
+Cap how many songs from the same artist can appear in one top-5 list.
 - Handling more complex user tastes  
+Allow a list of acceptable genres/moods instead of one exact string, so near-matches (e.g. "indie pop" for a "pop" fan) aren't scored as a complete miss.
 
 ---
 
@@ -239,5 +263,8 @@ A few sentences about your experience.
 Prompts:  
 
 - What you learned about recommender systems  
+A recommender is really just a weighted average dressed up as understanding a user the weights, not some deeper logic, decide what matters most.
 - Something unexpected or interesting you discovered  
+Feeding it a self contradictory profile (sad mood + high energy) didn't break it or return low scores across the board it just picked the best available compromise and stated it confidently.
 - How this changed the way you think about music recommendation apps  
+A "great match" score doesn't mean the app understood your mood it might just mean two out of three traits matched and the third got averaged away.
