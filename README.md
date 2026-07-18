@@ -4,14 +4,12 @@
 
 In this project you will build and explain a small music recommender system.
 
-Your goal is to:
+This version, **MoodMatch 1.0**:
 
-- Represent songs and a user "taste profile" as data
-- Design a scoring rule that turns that data into recommendations
-- Evaluate what your system gets right and wrong
-- Reflect on how this mirrors real world AI recommenders
-
-Replace this paragraph with your own summary of what your version does.
+- Scores each of the 18 catalog songs against a user's genre, mood, target energy, and (optionally) acoustic preference
+- Returns the top 5 matches, each with a plain-language reason
+- Was tested against three consistent profiles (High-Energy Pop, Chill Lofi, Deep Intense Rock)
+- Was also tested against one deliberately contradictory profile (Sad but Wired) to see how it handles conflicting preferences instead of clean ones
 
 ---
 
@@ -109,11 +107,11 @@ Top recommendations:
 
 ## Experiments You Tried
 
-Use this section to document the experiments you ran. For example:
+We didn't run these experiments, but based on the scoring formula, here's what we'd expect:
 
-- What happened when you changed the weight on genre from 2.0 to 0.5
-- What happened when you added tempo or valence to the score
-- How did your system behave for different types of users
+- **Genre weight (2.0 → 0.5):** only the ratio matters (weights renormalize), so lower genre weight lets mood matter more — confirmed by a quick test where Rooftop Lights (mood match) overtook Gym Hero (genre match) for #2.
+- **Adding tempo or valence:** tempo is 95% correlated with energy here, so it'd mostly double-count that signal; valence (~28% correlated) would be more independent but likely just echoes mood.
+- **Different user types:** consistent profiles (e.g. Chill Lofi) get a clear near-perfect #1; contradictory ones (e.g. Sad but Wired) still get a confident #1, but it's a compromise — genre+mood wins over a poor energy fit since the model averages rather than detects conflict.
 
 ---
 
@@ -121,11 +119,10 @@ Use this section to document the experiments you ran. For example:
 
 Summarize some limitations of your recommender.
 
-Examples:
-
-- It only works on a tiny catalog
-- It does not understand lyrics or language
-- It might over favor one genre or mood
+- Only works on a tiny, 18-song hand-labeled catalog
+- Doesn't understand lyrics, language, or artist reputation — only genre/mood/energy/acousticness tags
+- Can over-favor genre+mood matches even when energy is a bad fit, since it averages rather than detects contradictions
+- Genre/mood matching is exact-string and case-sensitive, so typos or synonyms silently score as a total mismatch
 
 You will go deeper on this in your model card.
 
@@ -139,8 +136,7 @@ Read and complete `model_card.md`:
 
 Write 1 to 2 paragraphs here about what you learned:
 
-- about how recommenders turn data into predictions
-- about where bias or unfairness could show up in systems like this
+Building this made it clear that a "recommendation" is just a weighted average wearing a friendly explanation — the model doesn't understand taste, it converts genre/mood/energy/acoustic matches into 0-1 scores and blends them by fixed weights, so whichever traits carry the most weight (here, genre and mood) end up deciding the winner almost regardless of the rest. That mechanical simplicity is also where bias creeps in: exact-string genre/mood matching silently punishes typos or synonyms, genres with only one song in the catalog get recommended by default rather than by genuine merit, and a self-contradictory profile still gets a confident top pick because the system averages preferences instead of flagging that they conflict — so it can look "fair" while quietly baking in whatever the weights and the catalog's blind spots happen to favor.
 
 
 
